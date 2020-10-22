@@ -1,4 +1,5 @@
 package segmentedfilesystem;
+import java.net.DatagramSocket;
 
 public class Main {
     
@@ -8,6 +9,7 @@ public class Main {
     public static void main(String[] args) {
         String server = "localhost";
         int port = 6014;
+        //DatagramSocket s = new DatagramSocket();
         
         if (args.length >= 1) {
             server = args[0];
@@ -19,5 +21,5 @@ public class Main {
         FileRetriever fileRetriever = new FileRetriever(server, port);
         fileRetriever.downloadFiles();
     }
-
+    //datagramsocket.connect(server, port)
 }
