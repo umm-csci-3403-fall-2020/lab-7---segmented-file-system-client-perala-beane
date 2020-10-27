@@ -1,13 +1,43 @@
 package segmentedfilesystem;
+import java.io.IOException;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
+import java.net.Socket;
+import java.net.SocketException;
+import java.net.UnknownHostException;
 
 public class FileRetriever {
+        String server;
+        int port;
+        DatagramSocket socket;
 
-	public FileRetriever(String server, int port) {
-        // Save the server and port for use in `downloadFiles()`
-        //...
+	public FileRetriever(String server, int port) throws SocketException, UnknownHostException {
+
+                this.server = server;
+                this.port = port;
+                socket = new DatagramSocket(port);
+
+                //InetAddress address = InetAddress.getByName(server);
+                //DatagramSocket s = new DatagramSocket(port);
+                //s.connect(address, port);
+                // catch (UnknownHostException uhe){
+                //         System.out.println("Error, unknown host.");
+                //     }
+                //     catch (SocketException se){
+                //         System.out.println("Error, socket exception.");
+                //     }
 	}
 
-	public void downloadFiles() {
+	public void downloadFiles() throws UnknownHostException, SocketException, IOException{
+                InetAddress address = InetAddress.getByName(this.server);
+
+                byte[] buffer = new byte[0];
+                DatagramPacket packet = new DatagramPacket(buffer, buffer.length, address, this.port);
+                socket.send(packet);
+
+                
+                
         // Do all the heavy lifting here.
         // This should
         //   * Connect to the server
@@ -20,6 +50,6 @@ public class FileRetriever {
         // PacketManager.allPacketsReceived() that you could
         // call for that, but there are a bunch of possible
         // ways.
-	}
+        }
 
 }

@@ -1,6 +1,6 @@
 package segmentedfilesystem;
-import java.net.DatagramSocket;
 
+//maybe ioexception?
 public class Main {
     
     // If there's one command line argument, it is assumed to
@@ -9,17 +9,16 @@ public class Main {
     public static void main(String[] args) {
         String server = "localhost";
         int port = 6014;
-        //DatagramSocket s = new DatagramSocket();
-        
+
         if (args.length >= 1) {
             server = args[0];
         }
         if (args.length >= 2) {
             port = Integer.parseInt(args[1]);
         }
-
+        
         FileRetriever fileRetriever = new FileRetriever(server, port);
-        fileRetriever.downloadFiles();
+        fileRetriever.downloadFiles(); 
     }
-    //datagramsocket.connect(server, port)
+    
 }
