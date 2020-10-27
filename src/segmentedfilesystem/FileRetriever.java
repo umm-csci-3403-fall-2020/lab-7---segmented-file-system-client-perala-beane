@@ -36,7 +36,11 @@ public class FileRetriever {
                 DatagramPacket packet = new DatagramPacket(buffer, buffer.length, address, this.port);
                 socket.send(packet);
 
-                
+                int files = 3; //as stated within the documentation.
+
+                while (files > 0) {
+
+                }
                 
         // Do all the heavy lifting here.
         // This should

@@ -1,12 +1,15 @@
 package segmentedfilesystem;
 
-//maybe ioexception?
+import java.io.IOException;
+import java.net.SocketException;
+import java.net.UnknownHostException;
+
 public class Main {
     
     // If there's one command line argument, it is assumed to
     // be the server. If there are two, the second is assumed
     // to be the port to use.
-    public static void main(String[] args) {
+    public static void main(String[] args) throws UnknownHostException, SocketException, IOException{
         String server = "localhost";
         int port = 6014;
 
