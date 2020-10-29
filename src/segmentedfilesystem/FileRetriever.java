@@ -33,13 +33,26 @@ public class FileRetriever {
                 InetAddress address = InetAddress.getByName(this.server);
 
                 byte[] buffer = new byte[0];
-                DatagramPacket packet = new DatagramPacket(buffer, buffer.length, address, this.port);
-                socket.send(packet);
+                DatagramPacket packetSend = new DatagramPacket(buffer, buffer.length, address, this.port);
+                socket.send(packetSend);
 
                 int files = 3; //as stated within the documentation.
 
                 while (files > 0) {
+                        buffer = new byte[1028];
+                        DatagramPacket packetReceive = new DatagramPacket(buffer, buffer.length);
+                        socket.receive(packetReceive);
 
+                        // Checking if the byte is even so it is a header packet
+                        if (packetReceive.getData()[0] %2 == 0) {
+                                // Deal with header packets
+                        }
+
+                        // Handling when the byte is even which means it is a data packet
+                        else {
+                                // Deal with the packets
+                                // Check to see when the last packet is with $4 == 3
+                        }
                 }
                 
         // Do all the heavy lifting here.
