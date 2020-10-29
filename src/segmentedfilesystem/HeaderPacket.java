@@ -1,21 +1,29 @@
 package segmentedfilesystem;
 
 import java.net.DatagramPacket;
+import java.util.Arrays;
 
 public class HeaderPacket {
     
     DatagramPacket packet;
 
     byte fileID;
+    byte[] filename;
 
-    public HeaderPacket() {
-        // assign the data packet
-        // assign the file id
-        // get assign the packet length
-        // cut the array to be the appropriate size
+    public HeaderPacket(DatagramPacket packet) {
+        
+        this.packet = packet;
+        
+        fileID = packet.getData()[1];
+        
+        filename = Arrays.copyOfRange(packet.getData(), 2, packet.getLength());
     }
 
     public byte getFileID(){
         return fileID;
+    }
+
+    public byte[] getFileName(){
+        return filename;
     }
 }
