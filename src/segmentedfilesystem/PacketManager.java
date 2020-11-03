@@ -18,8 +18,10 @@ public class PacketManager {
 
     public void listAdd(DataPacket dataPacket) {
         data.add(dataPacket);
-        if (data.size() == this.maxSize) {
+        if (data.size() >= this.maxSize) {
             this.isFull = true;
+        } else {
+            this.isFull = false;
         }
     }
 
