@@ -9,6 +9,11 @@ import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.Collections;
+import java.io.File;
+import java.io.FileOutputStream;
 
 public class FileRetriever {
 
@@ -31,6 +36,57 @@ public class FileRetriever {
                 // catch (SocketException se){
                 // System.out.println("Error, socket exception.");
                 // }
+        }
+
+        public void packetPackager(List<HeaderPacket> headerList, List<PacketManager> packageList) throws IOException {
+                for (int i = 0; i < headerList.size(); i++) {
+
+                        HeaderPacket header = headerList.get(i);
+                        byte fileID = header.fileID;
+                        PacketManager targetPacket = new PacketManager((byte) 1);
+
+                        for (int m = 0; m < packageList.size(); m++) {
+                                if (fileID == packageList.get(m).fileID) {
+                                        targetPacket = packageList.get(m);
+                                }
+                        }
+                        
+                        assembleFiles(targetPacket.data, header);
+                }
+        }
+
+        public void assembleFiles(List<DataPacket> dataPackets, HeaderPacket header) throws IOException {
+                String file = new String(header.getFileName());
+                Map<Integer, DataPacket> list = new HashMap<Integer, DataPacket>();
+                for (int i = 0; i < dataPackets.size(); i++) {
+                        DataPacket datPack = dataPackets.get(i);
+                        list.put(datPack.packetNumber, datPack);
+                }
+                List<DataPacket> sortedFiles = sortPackets(list);
+                writeFile(sortedFiles, file);
+        }
+
+        public List<DataPacket> sortPackets(Map<Integer, DataPacket> data) {
+                List<Integer> sorted = new ArrayList<Integer>(data.keySet());
+                Collections.sort(sorted);
+                List<DataPacket> sortedData = new ArrayList<DataPacket>();
+                for (Integer key : sorted) {
+                        sortedData.add(data.get(key));
+                } for (int i = 0; i < sortedData.size(); i++) {
+                        System.out.println(sortedData.get(i).packetNumber + "Packet Number");
+                }
+                return sortedData;
+        }
+
+        public void writeFile(List<DataPacket> sortedFiles, String file) throws IOException {
+                File finalFile = new File(file);
+                FileOutputStream outStream = new FileOutputStream(finalFile);
+                for (int i = 0; i < sortedFiles.size(); i++) {
+                        outStream.write(sortedFiles.get(i).copy);
+                }
+                outStream.flush();
+                outStream.close();
+
         }
 
         public void downloadFiles() throws UnknownHostException, SocketException, IOException {
@@ -81,24 +137,22 @@ public class FileRetriever {
                                                 files--;
                                         }
                                 }
-
-                                // Deal with the packets
-                                // Check to see when the last packet is with $4 == 3
                         }
                 }
 
-                // Do all the heavy lifting here.
-                // This should
-                // * Connect to the server
-                // * Download packets in some sort of loop
-                // * Handle the packets as they come in by, e.g.,
-                // handing them to some PacketManager class
-                // Your loop will need to be able to ask someone
-                // if you've received all the packets, and can thus
-                // terminate. You might have a method like
-                // PacketManager.allPacketsReceived() that you could
-                // call for that, but there are a bunch of possible
-                // ways.
+                packetPackager(headersList, packageList);
         }
+        // Do all the heavy lifting here.
+        // This should
+        // * Connect to the server
+        // * Download packets in some sort of loop
+        // * Handle the packets as they come in by, e.g.,
+        // handing them to some PacketManager class
+        // Your loop will need to be able to ask someone
+        // if you've received all the packets, and can thus
+        // terminate. You might have a method like
+        // PacketManager.allPacketsReceived() that you could
+        // call for that, but there are a bunch of possible
+        // ways.
 
 }
