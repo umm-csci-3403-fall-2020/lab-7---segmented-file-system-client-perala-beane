@@ -10,7 +10,8 @@ public class Main {
     // be the server. If there are two, the second is assumed
     // to be the port to use.
     public static void main(String[] args) throws UnknownHostException, SocketException, IOException{
-        String server = "localhost";
+        String server = "csci-4409.morris.umn.edu";
+	//String server = "localhost";
         int port = 6014;
 
         if (args.length >= 1) {

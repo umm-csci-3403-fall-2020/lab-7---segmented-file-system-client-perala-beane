@@ -25,7 +25,8 @@ public class FileRetriever {
 
                 this.server = server;
                 this.port = port;
-                socket = new DatagramSocket(port);
+                DatagramSocket socket = new DatagramSocket(port);
+		this.socket = socket;
 
                 // InetAddress address = InetAddress.getByName(server);
                 // DatagramSocket s = new DatagramSocket(port);
