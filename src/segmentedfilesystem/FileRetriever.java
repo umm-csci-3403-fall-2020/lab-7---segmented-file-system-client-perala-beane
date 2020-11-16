@@ -25,7 +25,8 @@ public class FileRetriever {
 
                 this.server = server;
                 this.port = port;
-                socket = new DatagramSocket(port);
+                //socket = new DatagramSocket(port);
+                socket = new DatagramSocket();
 
                 // InetAddress address = InetAddress.getByName(server);
                 // DatagramSocket s = new DatagramSocket(port);
@@ -98,6 +99,7 @@ public class FileRetriever {
                 List<PacketManager> packageList = new ArrayList<PacketManager>();
                 DatagramPacket packetSend = new DatagramPacket(buffer, buffer.length, address, this.port);
                 socket.send(packetSend);
+                System.out.println("Conversation started");
 
                 int files = 3; // as stated within the documentation.
 
@@ -106,6 +108,7 @@ public class FileRetriever {
                         buffer = new byte[1028];
                         DatagramPacket packetReceive = new DatagramPacket(buffer, buffer.length);
                         socket.receive(packetReceive);
+                        System.out.println("Data received");
 
                         // Checking if even which means it is a header packet
                         if (packetReceive.getData()[0] % 2 == 0) {
