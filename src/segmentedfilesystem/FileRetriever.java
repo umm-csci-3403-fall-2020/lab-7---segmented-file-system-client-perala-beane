@@ -53,7 +53,9 @@ public class FileRetriever {
                                 }
                         }
                         
+                        System.out.println("assembling files");
                         assembleFiles(targetPacket.data, header);
+                        System.out.println("files assembled");
                 }
         }
 
@@ -75,7 +77,7 @@ public class FileRetriever {
                 for (Integer key : sorted) {
                         sortedData.add(data.get(key));
                 } for (int i = 0; i < sortedData.size(); i++) {
-                        System.out.println(sortedData.get(i).packetNumber + "Packet Number");
+                        System.out.println(sortedData.get(i).packetNumber + " Packet Number");
                 }
                 return sortedData;
         }
@@ -101,10 +103,11 @@ public class FileRetriever {
 
                 // Filling the list to avoid an out of bounds error (COOKIE)
                 for (int i = 0; i < 3; i++) {
-                        PacketManager packet = new PacketManager(Byte.MAX_VALUE);
+                        byte max_val = Byte.MAX_VALUE;
+                        PacketManager packet = new PacketManager(max_val);
                         packageList.add(packet);
                 }
-                
+
                 DatagramPacket packetSend = new DatagramPacket(buffer, buffer.length, address, this.port);
                 socket.send(packetSend);
                 System.out.println("Conversation started");
@@ -123,6 +126,7 @@ public class FileRetriever {
 
                                 HeaderPacket header = new HeaderPacket(packetReceive);
                                 headersList.add(header);
+                                System.out.println("handling header");
                         }
 
                         // Handling when it is odd which means it is a data packet
@@ -131,8 +135,9 @@ public class FileRetriever {
                                 DataPacket datPack = new DataPacket(packetReceive);
 
                                 // Might need to change the 3 here
-                                for (int i = 0; i < 3; i++) {
+                                for (int i = 0; i < packageList.size(); i++) {
 
+                                        System.out.println("handling packet");
                                         packageList.get(i).setFileID(datPack.fileID);
                                         packageList.get(i).listAdd(datPack);
                                         datPack.wasAdded = true;
@@ -152,6 +157,7 @@ public class FileRetriever {
                 }
 
                 packetPackager(headersList, packageList);
+                System.out.println("did we make it?");
         }
         // Do all the heavy lifting here.
         // This should
