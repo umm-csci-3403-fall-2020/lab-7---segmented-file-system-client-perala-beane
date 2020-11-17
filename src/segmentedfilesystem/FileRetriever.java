@@ -26,6 +26,7 @@ public class FileRetriever {
                 this.server = server;
                 this.port = port;
                 //socket = new DatagramSocket(port);
+                // removed DataGramSocket's input to get rid of binding error
                 socket = new DatagramSocket();
 
                 // InetAddress address = InetAddress.getByName(server);
@@ -97,6 +98,13 @@ public class FileRetriever {
                 byte[] buffer = new byte[0];
                 List<HeaderPacket> headersList = new ArrayList<HeaderPacket>();
                 List<PacketManager> packageList = new ArrayList<PacketManager>();
+
+                // Filling the list to avoid an out of bounds error (COOKIE)
+                for (int i = 0; i < 3; i++) {
+                        PacketManager packet = new PacketManager(Byte.MAX_VALUE);
+                        packageList.add(packet);
+                }
+                
                 DatagramPacket packetSend = new DatagramPacket(buffer, buffer.length, address, this.port);
                 socket.send(packetSend);
                 System.out.println("Conversation started");
