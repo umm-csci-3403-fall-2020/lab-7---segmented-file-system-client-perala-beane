@@ -1,4 +1,4 @@
-[![Actions Status](../../workflows/Bats%20tests/badge.svg)](../../actions?query=workflow%3A"Bats+tests")
+[![Actions Status](../../workflows/Bats%20test/badge.svg)](../../actions?query=workflow%3A"Bats+test")
 
 # Segmented-File-Server-client <!-- omit in toc -->
 
