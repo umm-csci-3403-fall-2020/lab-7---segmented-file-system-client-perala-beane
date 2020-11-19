@@ -41,15 +41,21 @@ public class FileRetriever {
         }
 
         public void packetPackager(List<HeaderPacket> headerList, List<PacketManager> packageList) throws IOException {
+                System.out.println("headerlist size " + headerList.size());
                 for (int i = 0; i < headerList.size(); i++) {
 
                         HeaderPacket header = headerList.get(i);
                         byte fileID = header.fileID;
                         PacketManager targetPacket = new PacketManager((byte) 1);
-
+                        System.out.println("package list size " + packageList.size());
                         for (int m = 0; m < packageList.size(); m++) {
                                 if (fileID == packageList.get(m).fileID) {
                                         targetPacket = packageList.get(m);
+                                        
+                                        System.out.println("\n");
+                                        System.out.println("packageList contents:");
+                                        System.out.println(packageList.get(m) + " <- maybe this is empty");
+                                        System.out.println("\n");
                                 }
                         }
                         
@@ -60,13 +66,21 @@ public class FileRetriever {
         }
 
         public void assembleFiles(List<DataPacket> dataPackets, HeaderPacket header) throws IOException {
+                System.out.println("\n");
+                System.out.println("size of datapackets" + dataPackets.size());
+                System.out.println("\n");
                 String file = new String(header.getFileName());
                 Map<Integer, DataPacket> list = new HashMap<Integer, DataPacket>();
                 for (int i = 0; i < dataPackets.size(); i++) {
                         DataPacket datPack = dataPackets.get(i);
                         list.put(datPack.packetNumber, datPack);
                 }
+                System.out.println(list);
                 List<DataPacket> sortedFiles = sortPackets(list);
+                System.out.println("\n");
+                System.out.println("sortedFiles size:");
+                System.out.println(sortedFiles.size());
+                System.out.println("\n");
                 writeFile(sortedFiles, file);
         }
 
@@ -77,8 +91,16 @@ public class FileRetriever {
                 for (Integer key : sorted) {
                         sortedData.add(data.get(key));
                 } for (int i = 0; i < sortedData.size(); i++) {
+
+                        System.out.println("\n");
                         System.out.println(sortedData.get(i).packetNumber + " Packet Number");
+                        System.out.println("\n");
                 }
+
+                System.out.println("\n");
+                System.out.println("sortedData size:");
+                System.out.println(sortedData.size());
+                System.out.println("\n");
                 return sortedData;
         }
 
@@ -114,12 +136,18 @@ public class FileRetriever {
 
                 int files = 3; // as stated within the documentation.
 
-                while (files > 0) {
+                //while (files > 0) 
+                while (headersList.size() == 0)
+                {
 
-                        buffer = new byte[1028];
+                         buffer = new byte[1028];
+                        // buffer = new byte[0];
                         DatagramPacket packetReceive = new DatagramPacket(buffer, buffer.length);
                         socket.receive(packetReceive);
                         System.out.println("Data received");
+
+                        System.out.println("packetReceives data: " + packetReceive.getData()[0] % 2);
+
 
                         // Checking if even which means it is a header packet
                         if (packetReceive.getData()[0] % 2 == 0) {
@@ -131,7 +159,6 @@ public class FileRetriever {
 
                         // Handling when it is odd which means it is a data packet
                         else {
-
                                 DataPacket datPack = new DataPacket(packetReceive);
 
                                 // Might need to change the 3 here
@@ -152,12 +179,12 @@ public class FileRetriever {
                                         if ((packageList.get(i).isFull == true)) {
                                                 files--;
                                         }
+                                        break;
                                 }
                         }
                 }
-
                 packetPackager(headersList, packageList);
-                System.out.println("did we make it?");
+                System.out.println("End of download files");
         }
         // Do all the heavy lifting here.
         // This should
