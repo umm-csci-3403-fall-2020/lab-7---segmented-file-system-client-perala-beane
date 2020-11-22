@@ -136,8 +136,8 @@ public class FileRetriever {
 
                 int files = 3; // as stated within the documentation.
 
-                //while (files > 0) 
-                while (headersList.size() == 0)
+                while (files > 0) 
+                //while (headersList.size() == 0)
                 {
 
                          buffer = new byte[1028];
