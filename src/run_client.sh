@@ -17,7 +17,7 @@ javac segmentedfilesystem/*.java
 
 # Run the client
 java segmentedfilesystem.Main "$server"
-
+sleep 20
 if [[ $serverPID ]]; then
     kill "$serverPID"
 fi
