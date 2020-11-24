@@ -10,6 +10,7 @@ public class Main {
     // be the server. If there are two, the second is assumed
     // to be the port to use.
     public static void main(String[] args) throws UnknownHostException, SocketException, IOException{
+        
         String server = "csci-4409.morris.umn.edu";
 	    //String server = "localhost";
         int port = 6014;
@@ -22,7 +23,9 @@ public class Main {
         }
         
         FileRetriever fileRetriever = new FileRetriever(server, port);
+        System.out.println("Downloading files");
         fileRetriever.downloadFiles(); 
+        System.out.println("Files downloaded");
     }
     
 }

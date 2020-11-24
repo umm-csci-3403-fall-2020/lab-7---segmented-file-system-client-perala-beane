@@ -14,7 +14,7 @@ public class DataPacket {
 
     public DataPacket(DatagramPacket packet) {
         this.data = packet.getData();
-        this.setPacketNumber();
+        this.packetNumber = this.setPacketNumber();
         this.fileID = data[1]; //from slideshow
         this.status = data[0]; //from slideshow
         length = packet.getLength();
@@ -23,7 +23,7 @@ public class DataPacket {
 
     }
 
-    public void setPacketNumber() { //from documentation
+    public int setPacketNumber() { //from documentation
         int x = data[2]; //from slideshow
         int y = data[3]; //from slideshow
 
@@ -35,6 +35,8 @@ public class DataPacket {
         }
 
         this.packetNumber = (256 * x + y);
+        // Jack added this.
+        return packetNumber;
     }
 
     public byte returnFileID() {
