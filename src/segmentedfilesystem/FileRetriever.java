@@ -10,6 +10,9 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import javax.swing.plaf.synth.SynthStyleFactory;
+
 import java.util.HashMap;
 import java.util.Collections;
 import java.io.File;
@@ -132,35 +135,22 @@ public class FileRetriever {
                                  System.out.println("welcome to the else block mis amigos");
                                  DataPacket datPack = new DataPacket(packetReceive);
 
-                                // packageList.get(id).setFileID(datPack.fileID);
-                                // packageList.get(id).listAdd(datPack);
-
-                                // if ((datPack.status % 4) == 3) {
-                                //         packageList.get(id).maxSize(datPack.packetNumber);
-                                // }
-                                
-                                // id++;
-
                                 // Might need to change the 3 here
                                 for (int i = 0; i < 3; i++) {
                                         if (packageList.get(i).fileID == datPack.fileID) {
                                                 packageList.get(i).listAdd(datPack);
                                                 datPack.wasAdded = true;
                                         }
-                                        // Problem here applying to all packageManagers from packageList
-                                        // packageList.get(i).setFileID(datPack.fileID);
-                                        // packageList.get(i).listAdd(datPack);
-                                        // datPack.wasAdded = true;
 
                                         if ((datPack.status % 4) == 3) {
 
                                                 packageList.get(i).maxSize(datPack.packetNumber);
-
                                         }
                                         // This if statement may not be necessary as at the moment we are assuming
                                         // we only have three files.
                                         if ((packageList.get(i).isFull == true)) {
                                                 files--;
+                                                System.out.println("files count " + files);
                                         }
                                 }
                         
@@ -175,28 +165,14 @@ public class FileRetriever {
                                                 }
                                                 if (packageList.get(i).isFull == true) {
                                                         files--;
+                                                        System.out.println("files count run dos " + files);
                                                 }
                                                 break;
                                         }
                                 }
                         }
                 }
-                        //files -= 1;
-                }
-
+        }
                 packetPackager(headersList, packageList);
         }
-        // Do all the heavy lifting here.
-        // This should
-        // * Connect to the server
-        // * Download packets in some sort of loop
-        // * Handle the packets as they come in by, e.g.,
-        // handing them to some PacketManager class
-        // Your loop will need to be able to ask someone
-        // if you've received all the packets, and can thus
-        // terminate. You might have a method like
-        // PacketManager.allPacketsReceived() that you could
-        // call for that, but there are a bunch of possible
-        // ways.
-
 }
