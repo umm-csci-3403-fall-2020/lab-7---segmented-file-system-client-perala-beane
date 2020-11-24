@@ -12,7 +12,7 @@ public class Main {
     public static void main(String[] args) throws UnknownHostException, SocketException, IOException{
         
         String server = "csci-4409.morris.umn.edu";
-	//String server = "localhost";
+	    //String server = "localhost";
         int port = 6014;
 
         if (args.length >= 1) {

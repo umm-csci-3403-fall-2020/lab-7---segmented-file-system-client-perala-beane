@@ -10,6 +10,9 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import javax.swing.plaf.synth.SynthStyleFactory;
+
 import java.util.HashMap;
 import java.util.Collections;
 import java.io.File;
@@ -41,46 +44,30 @@ public class FileRetriever {
         }
 
         public void packetPackager(List<HeaderPacket> headerList, List<PacketManager> packageList) throws IOException {
-                //System.out.println("headerlist size " + headerList.size());
                 for (int i = 0; i < headerList.size(); i++) {
 
                         HeaderPacket header = headerList.get(i);
                         byte fileID = header.fileID;
                         PacketManager targetPacket = new PacketManager((byte) 1);
-                        System.out.println("package list size " + packageList.size());
+
                         for (int m = 0; m < packageList.size(); m++) {
                                 if (fileID == packageList.get(m).fileID) {
                                         targetPacket = packageList.get(m);
-                                        
-                                        System.out.println("\n");
-                                        System.out.println("packageList contents:");
-                                        System.out.println(packageList.get(m) + " <- maybe this is empty");
-                                        System.out.println("\n");
                                 }
                         }
                         
-                        System.out.println("assembling files");
                         assembleFiles(targetPacket.data, header);
-                        System.out.println("files assembled");
                 }
         }
 
         public void assembleFiles(List<DataPacket> dataPackets, HeaderPacket header) throws IOException {
-                System.out.println("\n");
-                System.out.println("size of datapackets" + dataPackets.size());
-                System.out.println("\n");
                 String file = new String(header.getFileName());
                 Map<Integer, DataPacket> list = new HashMap<Integer, DataPacket>();
                 for (int i = 0; i < dataPackets.size(); i++) {
                         DataPacket datPack = dataPackets.get(i);
                         list.put(datPack.packetNumber, datPack);
                 }
-                System.out.println(list);
                 List<DataPacket> sortedFiles = sortPackets(list);
-                System.out.println("\n");
-                System.out.println("sortedFiles size:");
-                System.out.println(sortedFiles.size());
-                System.out.println("\n");
                 writeFile(sortedFiles, file);
         }
 
@@ -91,16 +78,8 @@ public class FileRetriever {
                 for (Integer key : sorted) {
                         sortedData.add(data.get(key));
                 } for (int i = 0; i < sortedData.size(); i++) {
-
-                        System.out.println("\n");
-                        System.out.println(sortedData.get(i).packetNumber + " Packet Number");
-                        System.out.println("\n");
+                        System.out.println(sortedData.get(i).packetNumber + "Packet Number");
                 }
-
-                System.out.println("\n");
-                System.out.println("sortedData size:");
-                System.out.println(sortedData.size());
-                System.out.println("\n");
                 return sortedData;
         }
 
@@ -123,91 +102,77 @@ public class FileRetriever {
                 List<HeaderPacket> headersList = new ArrayList<HeaderPacket>();
                 List<PacketManager> packageList = new ArrayList<PacketManager>();
 
-                // // Filling the list to avoid an out of bounds error (COOKIE)
-                // for (int i = 0; i < 3; i++) {
-                //         byte max_val = Byte.MAX_VALUE;
-                //         PacketManager packet = new PacketManager(max_val);
-                //         packageList.add(packet);
-                // }
-
-                DatagramPacket packetSend = new DatagramPacket(buffer, buffer.length, address, this.port);
-                socket.send(packetSend);
-
                 // Filling the list to avoid an out of bounds error (COOKIE)
-                for (int i = 0; i < 10; i++) {
-                        byte max_val = Byte.MAX_VALUE;
-                        PacketManager packet = new PacketManager(max_val);
+                for (int i = 0; i < 3; i++) {
+                        PacketManager packet = new PacketManager(Byte.MAX_VALUE);
                         packageList.add(packet);
                 }
-
+                
+                DatagramPacket packetSend = new DatagramPacket(buffer, buffer.length, address, this.port);
+                socket.send(packetSend);
                 System.out.println("Conversation started");
 
                 int files = 3; // as stated within the documentation.
+                int id = 0;
 
-                //while (files > 0) 
-                while (files > 0)
-                //while (headersList.size() == 0)
-                {
+                while (files > 0) {
 
-                        byte[] bufCount = new byte[1028];
-                        // buffer = new byte[0];
-                        DatagramPacket packetReceive = new DatagramPacket(bufCount, bufCount.length);
+                        buffer = new byte[1028];
+                        DatagramPacket packetReceive = new DatagramPacket(buffer, buffer.length);
                         socket.receive(packetReceive);
                         System.out.println("Data received");
-
-                        // System.out.println("packetReceives data: " + packetReceive.getData()[0] % 2);
-
 
                         // Checking if even which means it is a header packet
                         if (packetReceive.getData()[0] % 2 == 0) {
 
                                 HeaderPacket header = new HeaderPacket(packetReceive);
                                 headersList.add(header);
-                                System.out.println("handling header");
+                                System.out.println("How about some headers?");
                         }
 
                         // Handling when it is odd which means it is a data packet
                         else {
-                                DataPacket datPack = new DataPacket(packetReceive);
+                                 System.out.println("welcome to the else block mis amigos");
+                                 DataPacket datPack = new DataPacket(packetReceive);
 
                                 // Might need to change the 3 here
-                                for (int i = 0; i < packageList.size(); i++) {
-
-                                        System.out.println("handling packet");
-                                        System.out.println("fileID before: " + packageList.get(i).fileID);
-                                        packageList.get(i).setFileID(datPack.fileID);
-                                        System.out.println("fileID after: " + packageList.get(i).fileID);
-                                        packageList.get(i).listAdd(datPack);
-                                        datPack.wasAdded = true;
+                                for (int i = 0; i < 3; i++) {
+                                        if (packageList.get(i).fileID == datPack.fileID) {
+                                                packageList.get(i).listAdd(datPack);
+                                                datPack.wasAdded = true;
+                                        }
 
                                         if ((datPack.status % 4) == 3) {
+
                                                 packageList.get(i).maxSize(datPack.packetNumber);
                                         }
                                         // This if statement may not be necessary as at the moment we are assuming
                                         // we only have three files.
                                         if ((packageList.get(i).isFull == true)) {
                                                 files--;
+                                                System.out.println("files count " + files);
                                         }
-                                         //break;
+                                }
+                        
+                        if (datPack.wasAdded == false) {
+                                for (int i = 0; i < packageList.size(); i++) {
+                                        if (packageList.get(i).fileID == Byte.MAX_VALUE){
+                                                packageList.get(i).setFileID(datPack.fileID);
+                                                packageList.get(i).listAdd(datPack);
+                                                datPack.wasAdded = true;
+                                                if ((datPack.status % 4) == 3) {
+                                                        packageList.get(i).maxSize(datPack.packetNumber);
+                                                }
+                                                if (packageList.get(i).isFull == true) {
+                                                        files--;
+                                                        System.out.println("files count run dos " + files);
+                                                }
+                                                break;
+                                        }
                                 }
                         }
                 }
-                System.out.println("headersList size prepacking: " + headersList.size());
-                System.out.println("packageLIst size prepacking " + packageList.size());
-                packetPackager(headersList, packageList);
-                //System.out.println("End of download files");
         }
-        // Do all the heavy lifting here.
-        // This should
-        // * Connect to the server
-        // * Download packets in some sort of loop
-        // * Handle the packets as they come in by, e.g.,
-        // handing them to some PacketManager class
-        // Your loop will need to be able to ask someone
-        // if you've received all the packets, and can thus
-        // terminate. You might have a method like
-        // PacketManager.allPacketsReceived() that you could
-        // call for that, but there are a bunch of possible
-        // ways.
-
+                packetPackager(headersList, packageList);
+        }
 }
