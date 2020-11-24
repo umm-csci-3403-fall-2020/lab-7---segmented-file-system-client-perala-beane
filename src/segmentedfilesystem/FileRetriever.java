@@ -110,6 +110,7 @@ public class FileRetriever {
                 System.out.println("Conversation started");
 
                 int files = 3; // as stated within the documentation.
+                int id = 0;
 
                 while (files > 0) {
 
@@ -123,19 +124,33 @@ public class FileRetriever {
 
                                 HeaderPacket header = new HeaderPacket(packetReceive);
                                 headersList.add(header);
+                                System.out.println("How about some headers?");
                         }
 
                         // Handling when it is odd which means it is a data packet
                         else {
+                                 System.out.println("welcome to the else block mis amigos");
+                                 DataPacket datPack = new DataPacket(packetReceive);
 
-                                DataPacket datPack = new DataPacket(packetReceive);
+                                // packageList.get(id).setFileID(datPack.fileID);
+                                // packageList.get(id).listAdd(datPack);
+
+                                // if ((datPack.status % 4) == 3) {
+                                //         packageList.get(id).maxSize(datPack.packetNumber);
+                                // }
+                                
+                                // id++;
 
                                 // Might need to change the 3 here
                                 for (int i = 0; i < 3; i++) {
-
-                                        packageList.get(i).setFileID(datPack.fileID);
-                                        packageList.get(i).listAdd(datPack);
-                                        datPack.wasAdded = true;
+                                        if (packageList.get(i).fileID == datPack.fileID) {
+                                                packageList.get(i).listAdd(datPack);
+                                                datPack.wasAdded = true;
+                                        }
+                                        // Problem here applying to all packageManagers from packageList
+                                        // packageList.get(i).setFileID(datPack.fileID);
+                                        // packageList.get(i).listAdd(datPack);
+                                        // datPack.wasAdded = true;
 
                                         if ((datPack.status % 4) == 3) {
 
@@ -148,7 +163,25 @@ public class FileRetriever {
                                                 files--;
                                         }
                                 }
+                        
+                        if (datPack.wasAdded == false) {
+                                for (int i = 0; i < packageList.size(); i++) {
+                                        if (packageList.get(i).fileID == Byte.MAX_VALUE){
+                                                packageList.get(i).setFileID(datPack.fileID);
+                                                packageList.get(i).listAdd(datPack);
+                                                datPack.wasAdded = true;
+                                                if ((datPack.status % 4) == 3) {
+                                                        packageList.get(i).maxSize(datPack.packetNumber);
+                                                }
+                                                if (packageList.get(i).isFull == true) {
+                                                        files--;
+                                                }
+                                                break;
+                                        }
+                                }
                         }
+                }
+                        //files -= 1;
                 }
 
                 packetPackager(headersList, packageList);
